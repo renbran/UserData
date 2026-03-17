@@ -1,0 +1,1 @@
+17.0.0.1 => Fixed fency invoice report related issue and solved some testcase related errors in odoosh.
