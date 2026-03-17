@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Main Commission Menu -->
+        <menuitem id="menu_commission_main" name="Commission" sequence="25"
+                  groups="advanced_sales_commission.group_commission_user"
+                  web_icon="advanced_sales_commission,static/description/icon.png"/>
+
+
+        <!-- Records -->
+        <menuitem id="menu_commission_records" name="Commission Records" parent="menu_commission_main"
+                  action="action_commission_record" sequence="50"/>
+
+        <!-- Periods -->
+        <menuitem id="menu_commission_periods" name="Commission Periods" parent="menu_commission_main"
+                  action="action_commission_period" sequence="60"
+                  groups="advanced_sales_commission.group_commission_manager"/>
+
+        <!-- Reports -->
+        <menuitem id="menu_commission_reports" name="Reports" parent="menu_commission_main" sequence="70"
+                  groups="advanced_sales_commission.group_commission_manager"/>
+        <!-- keep only if action exists -->
+        <menuitem id="menu_commission_report_wizard" name="Commission Report" parent="menu_commission_reports"
+                  action="advanced_sales_commission.action_commission_report_wizard" sequence="80"/>
+        <menuitem id="menu_commission_date_range_report" name="Date Range Report" parent="menu_commission_reports"
+                  action="advanced_sales_commission.action_commission_date_range_report" sequence="90"/>
+
+        <!-- Tools -->
+        <menuitem id="menu_commission_tools" name="Tools" parent="menu_commission_main" sequence="100"
+                  groups="advanced_sales_commission.group_commission_manager"/>
+        <menuitem id="menu_commission_calculate_wizard" name="Calculate Commissions" parent="menu_commission_tools"
+                  action="advanced_sales_commission.action_commission_calculate_wizard" sequence="110"/>
+        <menuitem id="menu_commission_invoice_wizard" name="Generate Commission Invoices" parent="menu_commission_tools"
+                  action="advanced_sales_commission.action_commission_invoice_wizard" sequence="120"/>
+
+        <!-- Configuration -->
+        <menuitem id="menu_commission_configuration" name="Configuration" parent="menu_commission_main" sequence="130"
+                  groups="advanced_sales_commission.group_commission_manager"/>
+        <menuitem id="menu_commission_config" name="Commission Configurations" parent="menu_commission_configuration"
+                  action="action_commission_config" sequence="140"/>
+        <menuitem id="menu_commission_rule" name="Commission Rules" parent="menu_commission_configuration"
+                  action="action_commission_rule" sequence="150"/>
+        <menuitem id="menu_commission_assignment" name="Commission Assignments" parent="menu_commission_configuration"
+                  action="action_commission_assignment" sequence="160"/>
+
+    </data>
+</odoo>
+

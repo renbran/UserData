@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- list View -->
+        <record id="commission_period_view_list" model="ir.ui.view">
+            <field name="name">commission.period.list</field>
+            <field name="model">commission.period</field>
+            <field name="arch" type="xml">
+                <tree string="Commission Periods" decoration-info="state == 'draft'" decoration-success="state == 'open'" decoration-muted="state == 'closed'">
+                    <field name="name"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="commission_count"/>
+                    <field name="total_commission" sum="Total Commission"/>
+                    <field name="total_sales" sum="Total Sales"/>
+                    <field name="state"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="commission_period_view_form" model="ir.ui.view">
+            <field name="name">commission.period.form</field>
+            <field name="model">commission.period</field>
+            <field name="arch" type="xml">
+                <form string="Commission Period">
+                    <header>
+                        <button name="action_open" type="object" string="Open Period" class="oe_highlight" invisible="state != 'draft'" />
+                        <button name="action_close" type="object" string="Close Period" class="oe_highlight" invisible="state != 'open'"/>
+                        <button name="action_reopen" type="object" string="Reopen Period" invisible="state != 'closed'" />
+                        <button name="action_calculate_commissions" type="object" string="Calculate Commissions" class="btn-secondary" invisible="state != 'closed'"/>
+                        <button name="action_generate_invoices" type="object" string="Generate Invoices" class="btn-secondary" invisible="state != 'open'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,open,closed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_commissions"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-money">
+                                <field name="commission_count" widget="statinfo" string="Commissions"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="code"/>
+                                <field name="period_type"/>
+                            </group>
+                            <group>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        <group string="Statistics" col="4">
+                            <field name="commission_count"/>
+                            <field name="user_count"/>
+                            <field name="total_commission"/>
+                            <field name="total_sales"/>
+                            <field name="avg_commission_rate"/>
+                        </group>
+                        <notebook>
+                            <page string="Commission Records" name="commissions">
+                                <field name="commission_ids" readonly="1">
+                                    <tree>
+                                        <field name="user_id"/>
+                                        <field name="commission_amount"/>
+                                        <field name="base_amount"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="commission_period_view_search" model="ir.ui.view">
+            <field name="name">commission.period.search</field>
+            <field name="model">commission.period</field>
+            <field name="arch" type="xml">
+                <search string="Search Commission Periods">
+                    <field name="name" string="Period Name" filter_domain="[('name', 'ilike', self)]"/>
+                    <field name="state"/>
+                    <filter string="Draft" name="state_draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Open" name="state_open" domain="[('state', '=', 'open')]"/>
+                    <filter string="Closed" name="state_closed" domain="[('state', '=', 'closed')]"/>
+                    <group>
+                        <filter string="State" name="group_by_state" context="{'group_by': 'state'}"/>
+                        <filter string="Period Type" name="group_by_period_type" context="{'group_by': 'period_type'}"/>
+                        <filter string="Company" name="group_by_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="action_commission_period" model="ir.actions.act_window">
+            <field name="name">Commission Periods</field>
+            <field name="res_model">commission.period</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new commission period
+                </p><p>
+                    Commission periods help organize and manage commission calculations by time periods.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
+

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Commission Invoice Wizard Form View -->
+        <record id="commission_invoice_wizard_view_form" model="ir.ui.view">
+            <field name="name">commission.invoice.wizard.form</field>
+            <field name="model">commission.invoice.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Generate Commission Invoices">
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="invoice_date"/>
+                        </group>
+                        <group>
+                            <field name="user_ids" widget="many2many_tags"/>
+                            <field name="group_by_user"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_generate_invoices" type="object" string="Generate Invoices" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for Commission Invoice Wizard -->
+        <record id="action_commission_invoice_wizard" model="ir.actions.act_window">
+            <field name="name">Generate Commission Invoices</field>
+            <field name="res_model">commission.invoice.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>
+

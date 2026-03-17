@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Default Commission Configuration -->
+        <record id="commission_config_default" model="commission.config">
+            <field name="name">Default Commission Configuration</field>
+            <field name="commission_type">standard</field>
+            <field name="calculation_method">percentage</field>
+            <field name="default_rate">5.0</field>
+            <field name="auto_calculate" eval="True"/>
+            <field name="auto_invoice" eval="False"/>
+            <field name="sequence">10</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Default Commission Rules -->
+        <record id="commission_rule_standard" model="commission.rule">
+            <field name="name">Standard Commission Rule</field>
+            <field name="config_id" ref="commission_config_default"/>
+            <field name="condition_type">always</field>
+            <field name="commission_type">percentage</field>
+            <field name="commission_rate">5.0</field>
+            <field name="sequence">10</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- High Value Commission Rule -->
+        <record id="commission_rule_high_value" model="commission.rule">
+            <field name="name">High Value Orders (>$10,000)</field>
+            <field name="config_id" ref="commission_config_default"/>
+            <field name="condition_type">amount</field>
+            <field name="commission_type">percentage</field>
+            <field name="commission_rate">7.0</field>
+            <field name="min_amount">10000.0</field>
+            <field name="sequence">5</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Product-based Commission Configuration -->
+        <record id="commission_config_product_based" model="commission.config">
+            <field name="name">Product-Based Commission</field>
+            <field name="commission_type">product_based</field>
+            <field name="calculation_method">percentage</field>
+            <field name="default_rate">3.0</field>
+            <field name="auto_calculate" eval="True"/>
+            <field name="auto_invoice" eval="False"/>
+            <field name="sequence">20</field>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- Margin-based Commission Configuration -->
+        <record id="commission_config_margin_based" model="commission.config">
+            <field name="name">Margin-Based Commission</field>
+            <field name="commission_type">margin_based</field>
+            <field name="calculation_method">percentage</field>
+            <field name="default_rate">15.0</field>
+            <field name="auto_calculate" eval="True"/>
+            <field name="auto_invoice" eval="False"/>
+            <field name="sequence">30</field>
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- Commission Expense Account -->
+        <record id="account_commission_expense" model="account.account">
+            <field name="code">622000</field>
+            <field name="name">Commission Expenses</field>
+            <field name="account_type">expense</field>
+            <field name="reconcile" eval="False"/>
+        </record>
+
+    </data>
+</odoo>
+

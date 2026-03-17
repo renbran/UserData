@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- list View -->
+        <record id="commission_rule_view_list" model="ir.ui.view">
+            <field name="name">commission.rule.list</field>
+            <field name="model">commission.rule</field>
+            <field name="arch" type="xml">
+                <tree string="Commission Rules">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="config_id"/>
+                    <field name="condition_type"/>
+                    <field name="commission_type"/>
+                    <field name="commission_rate"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="commission_rule_view_form" model="ir.ui.view">
+            <field name="name">commission.rule.form</field>
+            <field name="model">commission.rule</field>
+            <field name="arch" type="xml">
+                <form string="Commission Rule">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="config_id"/>
+                                <field name="sequence"/>
+                            </group>
+                            <group>
+                                <field name="active" widget="boolean_toggle"/>
+                            </group>
+                        </group>
+                        <group string="Condition">
+                            <group>
+                                <field name="condition_type"/>
+                                <field name="condition_operator"/>
+                                <field name="condition_value" />
+                            </group>
+                            <group>
+                                <field name="product_ids" widget="many2many_tags" />
+                                <field name="category_ids" widget="many2many_tags"/>
+                                <field name="partner_ids" widget="many2many_tags"/>
+                                <field name="partner_category_ids" widget="many2many_tags" />
+                            </group>
+                        </group>
+                        <group string="Calculation">
+                            <group>
+                                <field name="commission_type"/>
+                                <field name="commission_rate"/>
+                            </group>
+                            <group>
+                                <field name="exclude_discount"/>
+                                <field name="include_tax"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Tiers" name="tiers">
+                                <field name="tier_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name=
+
+
+                                       "min_value"/>
+                                        <field name="max_value"/>
+                                        <field name="commission_rate"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Notes" name="notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="commission_rule_view_search" model="ir.ui.view">
+            <field name="name">commission.rule.search</field>
+            <field name="model">commission.rule</field>
+            <field name="arch" type="xml">
+                <search string="Search Commission Rules">
+                    <field name="name" string="Rule Name" filter_domain="[('name', 'ilike', self)]"/>
+                    <field name="config_id"/>
+                    <field name="condition_type"/>
+                    <field name="commission_type"/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <group>
+                        <filter string="Configuration" name="group_by_config" context="{'group_by': 'config_id'}"/>
+                        <filter string="Condition Type" name="group_by_condition_type" context="{'group_by': 'condition_type'}"/>
+                        <filter string="Commission Type" name="group_by_commission_type" context="{'group_by': 'commission_type'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="action_commission_rule" model="ir.actions.act_window">
+            <field name="name">Commission Rules</field>
+            <field name="res_model">commission.rule</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_group_by_config': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new commission rule
+                </p><p>
+                    Define specific conditions for calculating commissions.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
+

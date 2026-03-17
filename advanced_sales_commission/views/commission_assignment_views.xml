@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- list View -->
+        <record id="commission_assignment_view_list" model="ir.ui.view">
+            <field name="name">commission.assignment.list</field>
+            <field name="model">commission.assignment</field>
+            <field name="arch" type="xml">
+                <tree string="Commission Assignments">
+                    <field name="user_id"/>
+                    <field name="config_id"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="commission_assignment_view_form" model="ir.ui.view">
+            <field name="name">commission.assignment.form</field>
+            <field name="model">commission.assignment</field>
+            <field name="arch" type="xml">
+                <form string="Commission Assignment">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="user_id" class="oe_edit_only"/>
+                            <h1><field name="display_name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="user_id"/>
+                                <field name="config_id"/>
+                            </group>
+                            <group>
+                                <field name="active" widget="boolean_toggle"/>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                            </group>
+                        </group>
+                        <group string="Hierarchical Commission">
+                            <group>
+                                <field name="manager_id"/>
+                                <field name="manager_rate"/>
+                            </group>
+                            <group>
+                                <field name="director_id"/>
+                                <field name="director_rate"/>
+                            </group>
+                        </group>
+                        <group string="Override Settings">
+                            <group>
+                                <field name="use_rate_override"/>
+                                <field name="rate_override" invisible="use_rate_override == False"/>
+                            </group>
+                            <group>
+                                <field name="commission_on_payment"/>
+                                <field name="min_margin_required"/>
+                                <field name="exclude_returns"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Notes" name="notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="commission_assignment_view_search" model="ir.ui.view">
+            <field name="name">commission.assignment.search</field>
+            <field name="model">commission.assignment</field>
+            <field name="arch" type="xml">
+                <search string="Search Commission Assignments">
+                    <field name="user_id"/>
+                    <field name="config_id"/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <group>
+                        <filter string="Salesperson" name="group_by_user" context="{'group_by': 'user_id'}"/>
+                        <filter string="Configuration" name="group_by_config" context="{'group_by': 'config_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="action_commission_assignment" model="ir.actions.act_window">
+            <field name="name">Commission Assignments</field>
+            <field name="res_model">commission.assignment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new commission assignment
+                </p><p>
+                    Assign commission configurations to salespersons.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
+

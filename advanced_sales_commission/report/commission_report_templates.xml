@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="advanced_sales_commission.report_commission_summary">
+            <t t-call="web.html_container">
+                <t t-set="wizard_data" t-value="context.get('report_data', {})"/>
+                <t t-set="form_data" t-value="wizard_data.get('form', {})"/>
+                <t t-set="docs" t-value="docs"/>
+                <t t-call="web.external_layout">
+
+                    <style>
+                        .page {
+                        padding: 15px !important;
+                        font-family: 'Helvetica', 'Arial', sans-serif;
+                        }
+
+                        h2 {
+                        text-align: center;
+                        color: #5a3e75;
+                        font-weight: 700;
+                        letter-spacing: 0.5px;
+                        margin-bottom: 4px;
+                        }
+
+                        .report-period {
+                        text-align: center;
+                        margin-bottom: 25px;
+                        color: #6d6d6d;
+                        font-size: 14px;
+                        }
+
+                        table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 10px;
+                        border-radius: 6px;
+                        overflow: hidden;
+                        font-size: 13px;
+                        }
+
+                        thead th {
+                        background: linear-gradient(to right, #ece7f4, #f7f5fa);
+                        padding: 8px;
+                        color: #3b3a3c;
+                        border-bottom: 1px solid #dcd6e3;
+                        text-transform: uppercase;
+                        letter-spacing: 0.3px;
+                        font-size: 12px;
+                        }
+
+                        tbody td {
+                        padding: 8px;
+                        border-bottom: 1px solid #eee;
+                        }
+
+                        tbody tr:hover {
+                        background-color: #f5f1fa;
+                        transition: 0.2s ease-in-out;
+                        }
+
+                        tbody tr:nth-child(even) {
+                        background: #faf8fc;
+                        }
+
+                        tfoot th, tfoot td {
+                        background: #fafafa;
+                        padding: 10px;
+                        border-top: 2px solid #ccc;
+                        font-weight: 600;
+                        }
+
+                        .text-right {
+                        text-align: right;
+                        }
+                    </style>
+
+                    <div class="page">
+
+                        <h2>Commission Summary Report</h2>
+
+                        <div class="report-period">
+                            <t t-if="form_data.get('date_from') and form_data.get('date_to')">
+                                <p>
+                                    <strong>Period:</strong>
+                                    <span t-esc="form_data.get('date_from')"/>
+                                    to
+                                    <span t-esc="form_data.get('date_to')"/>
+                                </p>
+                            </t>
+
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Salesperson</th>
+                                    <th class="text-right">Commission Amount</th>
+                                    <th class="text-right">Commission Rate</th>
+                                    <th class="text-right">Total Sales</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <t t-set="total_sales" t-value="0"/>
+                                <t t-set="total_commission" t-value="0"/>
+                                <t t-set="total_records" t-value="0"/>
+
+                                <t t-foreach="docs.grouped('user_id').items()" t-as="ug">
+                                    <t t-set="user_id" t-value="ug[0]"/>
+                                    <t t-set="user_group" t-value="ug[1]"/>
+
+                                    <t t-set="user_sales" t-value="sum(user_group.mapped('base_amount'))"/>
+                                    <t t-set="user_commission" t-value="sum(user_group.mapped('commission_amount'))"/>
+                                    <t t-set="user_rate"
+                                       t-value="(user_commission / user_sales * 100) if user_sales else 0"/>
+
+                                    <tr>
+                                        <td>
+                                            <span t-esc="user_id.name"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span t-esc="'{:.2f}'.format(user_commission)"/>
+
+                                        </td>
+                                        <td class="text-right">
+                                            <span t-esc="str(round(user_rate, 2)) + '%'"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span t-esc="user_sales"/>
+                                        </td>
+                                    </tr>
+
+                                    <t t-set="total_sales" t-value="total_sales + user_sales"/>
+                                    <t t-set="total_commission" t-value="total_commission + user_commission"/>
+                                    <t t-set="total_records" t-value="total_records + len(user_group)"/>
+                                </t>
+
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Total</th>
+
+                                    <th class="text-right">
+                                        <span t-esc="'{:.2f}'.format(total_commission)"/>
+                                    </th>
+
+                                    <th class="text-right">
+                                        <span t-esc="str(round(((total_commission / total_sales * 100) if total_sales else 0), 2)) + '%'"/>
+                                    </th>
+
+                                    <th class="text-right">
+                                        <span t-esc="total_sales"/>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+
+        <template id="advanced_sales_commission.report_commission_comparison">
+            <t t-call="web.html_container">
+                <t t-set="wizard_data" t-value="context.get('report_data', {})"/>
+                <t t-set="form_data" t-value="wizard_data.get('form', {})"/>
+                <t t-set="docs" t-value="docs"/>
+
+                <t t-call="web.external_layout">
+
+                    <style>
+                        .page {
+                        padding: 15px !important;
+                        font-family: 'Helvetica', 'Arial', sans-serif;
+                        }
+
+                        h2 {
+                        text-align: center;
+                        color: #5a3e75;
+                        font-weight: 700;
+                        letter-spacing: 0.5px;
+                        margin-bottom: 4px;
+                        }
+
+                        .report-period {
+                        text-align: center;
+                        margin-bottom: 25px;
+                        color: #6d6d6d;
+                        font-size: 14px;
+                        }
+
+                        table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 10px;
+                        border-radius: 6px;
+                        overflow: hidden;
+                        font-size: 13px;
+                        }
+
+                        thead th {
+                        background: linear-gradient(to right, #ece7f4, #f7f5fa);
+                        padding: 8px;
+                        color: #3b3a3c;
+                        border-bottom: 1px solid #dcd6e3;
+                        text-transform: uppercase;
+                        letter-spacing: 0.3px;
+                        font-size: 12px;
+                        }
+
+                        tbody td {
+                        padding: 8px;
+                        border-bottom: 1px solid #eee;
+                        }
+
+                        tbody tr:hover {
+                        background-color: #f5f1fa;
+                        transition: 0.2s ease-in-out;
+                        }
+
+                        tbody tr:nth-child(even) {
+                        background: #faf8fc;
+                        }
+
+                        tfoot th, tfoot td {
+                        background: #fafafa;
+                        padding: 10px;
+                        border-top: 2px solid #ccc;
+                        font-weight: 600;
+                        }
+
+                        .text-right {
+                        text-align: right;
+                        }
+                    </style>
+
+                    <div class="page">
+
+                        <h2>Commission Comparison Report</h2>
+
+                        <div class="report-period">
+                            <t t-if="form_data.get('date_from') and form_data.get('date_to')">
+                                <p>
+                                    <strong>Period:</strong>
+                                    <span t-esc="form_data.get('date_from')"/>
+                                    to
+                                    <span t-esc="form_data.get('date_to')"/>
+                                </p>
+                            </t>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Salesperson</th>
+                                    <th class="text-right">Total Sales</th>
+                                    <th class="text-right">Commission Amount</th>
+                                    <th class="text-right">Commission Rate</th>
+                                    <th class="text-right">Record Count</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <t t-set="total_sales" t-value="0"/>
+                                <t t-set="total_commission" t-value="0"/>
+                                <t t-set="total_records" t-value="0"/>
+
+                                <t t-foreach="docs.grouped('user_id').items()" t-as="grp">
+
+                                    <t t-set="user_id" t-value="grp[0]"/>
+                                    <t t-set="user_group" t-value="grp[1]"/>
+
+                                    <t t-set="user_sales" t-value="sum(user_group.mapped('base_amount'))"/>
+                                    <t t-set="user_commission" t-value="sum(user_group.mapped('commission_amount'))"/>
+
+                                    <t t-set="user_rate"
+                                       t-value="(user_commission / user_sales * 100) if user_sales else 0"/>
+
+                                    <tr>
+                                        <td>
+                                            <span t-esc="user_id.name"/>
+                                        </td>
+
+                                        <td class="text-right">
+                                            <span t-esc="user_sales"/>
+                                        </td>
+
+                                        <td class="text-right">
+                                            <span t-esc="str(round(user_commission, 2))"/>
+                                        </td>
+
+                                        <td class="text-right">
+                                            <span t-esc="str(round(user_rate, 2)) + '%'"/>
+                                        </td>
+
+                                        <td class="text-right">
+                                            <span t-esc="len(user_group)"/>
+                                        </td>
+                                    </tr>
+
+                                    <t t-set="total_sales" t-value="total_sales + user_sales"/>
+                                    <t t-set="total_commission" t-value="total_commission + user_commission"/>
+                                    <t t-set="total_records" t-value="total_records + len(user_group)"/>
+                                </t>
+
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <th>Total</th>
+
+                                    <th class="text-right">
+                                        <span t-esc="total_sales"/>
+                                    </th>
+
+                                    <th class="text-right">
+                                        <span t-esc="str(round(total_commission, 2))"/>
+                                    </th>
+
+                                    <th class="text-right">
+                                        <span
+                                                t-esc="str(
+                                        round(
+                                            ((total_commission / total_sales * 100) if total_sales else 0),
+                                            2
+                                        )
+                                    ) + '%'"
+                                        />
+                                    </th>
+
+                                    <th class="text-right">
+                                        <span t-esc="total_records"/>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <template id="advanced_sales_commission.report_commission_detailed">
+            <t t-call="web.html_container">
+
+                <t t-set="docs" t-value="docs"/>
+                <t t-set="wizard_data" t-value="context.get('report_data', {})"/>
+                <t t-set="form_data" t-value="wizard_data.get('form', {})"/>
+                <t t-call="web.external_layout">
+
+                    <style>
+                        .page {
+                        padding: 15px !important;
+                        font-family: 'Helvetica', 'Arial', sans-serif;
+                        }
+
+                        h2 {
+                        text-align: center;
+                        color: #5a3e75;
+                        font-weight: 700;
+                        letter-spacing: 0.5px;
+                        margin-bottom: 4px;
+                        }
+
+                        .report-period {
+                        text-align: center;
+                        margin-bottom: 25px;
+                        color: #6d6d6d;
+                        font-size: 14px;
+                        }
+
+                        table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-top: 10px;
+                        border-radius: 6px;
+                        overflow: hidden;
+                        font-size: 13px;
+                        }
+
+                        thead th {
+                        background: linear-gradient(to right, #ece7f4, #f7f5fa);
+                        padding: 8px;
+                        color: #3b3a3c;
+                        border-bottom: 1px solid #dcd6e3;
+                        text-transform: uppercase;
+                        letter-spacing: 0.3px;
+                        font-size: 12px;
+                        }
+
+                        tbody td {
+                        padding: 8px;
+                        border-bottom: 1px solid #eee;
+                        }
+
+                        tbody tr:nth-child(even) {
+                        background: #faf8fc;
+                        }
+
+                        tbody tr:hover {
+                        background-color: #f5f1fa;
+                        transition: 0.2s ease-in-out;
+                        }
+
+                        .text-right {
+                        text-align: right;
+                        }
+                    </style>
+
+                    <div class="page">
+
+                        <h2>Commission Detailed Report</h2>
+
+                        <div class="report-period">
+                            <t t-if="form_data.get('date_from') and form_data.get('date_to')">
+                                <p>
+                                    <strong>Period:</strong>
+                                    <span t-esc="form_data.get('date_from')"/>
+                                    to
+                                    <span t-esc="form_data.get('date_to')"/>
+                                </p>
+                            </t>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Salesperson</th>
+                                    <th>Customer</th>
+                                    <th>Product</th>
+                                    <th class="text-right">Base</th>
+                                    <th class="text-right">Rate</th>
+                                    <th class="text-right">Commission</th>
+                                    <th>State</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <t t-foreach="docs" t-as="record">
+                                    <tr>
+
+                                        <td>
+                                            <span t-esc="record.calculation_date and record.calculation_date.strftime('%Y-%m-%d')"/>
+                                        </td>
+
+                                        <td>
+                                            <span t-esc="record.user_id.name"/>
+                                        </td>
+
+                                        <td>
+                                            <span t-esc="record.partner_id.name or 'N/A'"/>
+                                        </td>
+
+                                        <td>
+                                            <span t-esc="record.product_id.name or 'N/A'"/>
+                                        </td>
+
+                                        <td class="text-right">
+                                            <span t-esc="'{:.2f}'.format(record.base_amount)"/>
+                                        </td>
+
+                                        <td class="text-right">
+                                            <span t-esc="'{:.2f}%'.format(record.commission_rate)"/>
+                                        </td>
+
+                                        <td class="text-right">
+                                            <span t-esc="'{:.2f}'.format(record.commission_amount)"/>
+                                        </td>
+
+                                        <td>
+                                            <span t-esc="dict(record._fields['state'].selection)[record.state]"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <template id="report_commission_period">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="period">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2>Commission Period Report</h2>
+                                    <h3>
+                                        <span t-esc="period.name"/>
+                                    </h3>
+                                    <p>
+                                        <strong>Period:</strong>
+                                        <span t-esc="period.date_from"/>
+                                        to
+                                        <span t-esc="period.date_to"/>
+                                    </p>
+                                    <p>
+                                        <strong>State:</strong>
+                                        <span t-esc="dict(period._fields['state'].selection)[period.state]"/>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="row mt32">
+                                <div class="col-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Summary Statistics</h5>
+                                            <p>
+                                                <strong>Total Commission:</strong>
+                                                <span t-esc="period.total_commission"/>
+                                            </p>
+                                            <p>
+                                                <strong>Total Sales:</strong>
+                                                <span t-esc="period.total_sales"/>
+                                            </p>
+                                            <p>
+                                                <strong>Average Rate:</strong>
+                                                <span t-esc="'%.2f%%' % period.avg_commission_rate"/>
+                                            </p>
+                                            <p>
+                                                <strong>Commission Count:</strong>
+                                                <span t-esc="period.commission_count"/>
+                                            </p>
+                                            <p>
+                                                <strong>Salesperson Count:</strong>
+                                                <span t-esc="period.user_count"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <h4>Commission Records</h4>
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Salesperson</th>
+                                                <th>Customer</th>
+                                                <th class="text-right">Base Amount</th>
+                                                <th class="text-right">Commission Amount</th>
+                                                <th>State</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="period.commission_ids" t-as="record">
+                                                <tr>
+                                                    <td>
+                                                        <span t-esc="record.user_id.name"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-esc="record.partner_id.name or 'N/A'"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-esc="record.base_amount"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-esc="record.commission_amount"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-esc="dict(record._fields['state'].selection)[record.state]"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <template id="report_commission_statement">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="user">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2>Commission Statement</h2>
+                                    <h3>
+                                        <span t-esc="user.name"/>
+                                    </h3>
+                                    <p>
+                                        <strong>Period:</strong>
+                                        <span t-esc="context.get('date_from', 'N/A')"/>
+                                        to
+                                        <span t-esc="context.get('date_to', 'N/A')"/>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <t t-foreach="commission_records" t-as="record">
+                                <tr>
+                                    <td>
+                                        <t t-esc="record.user_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="record.order_line_id.order_id.name"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="record.commission_amount"/>
+                                    </td>
+                                </tr>
+                            </t>
+
+                            <div class="row mt32">
+                                <div class="col-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Summary</h5>
+                                            <p>
+                                                <strong>Total Commission:</strong>
+                                                <span t-esc="sum(commission_records.mapped('commission_amount'))"
+                                                      t-options="{'widget': 'monetary'}"/>
+                                            </p>
+                                            <p>
+                                                <strong>Total Sales:</strong>
+                                                <span t-esc="sum(commission_records.mapped('base_amount'))"
+                                                      t-options="{'widget': 'monetary'}"/>
+                                            </p>
+                                            <p>
+                                                <strong>Commission Count:</strong>
+                                                <span t-esc="len(commission_records)"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <h4>Commission Details</h4>
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Description</th>
+                                                <th>Customer</th>
+                                                <th class="text-right">Base Amount</th>
+                                                <th class="text-right">Rate</th>
+                                                <th class="text-right">Commission</th>
+                                                <th>State</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="commission_records" t-as="record">
+                                                <tr>
+                                                    <td>
+                                                        <span t-esc="record.calculation_date.strftime('%Y-%m-%d')"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-esc="record.name"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-esc="record.partner_id.name or 'N/A'"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-esc="record.base_amount"
+                                                              t-options="{'widget': 'monetary'}"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-esc="'%.2f%%' % record.commission_rate"/>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-esc="record.commission_amount"
+                                                              t-options="{'widget': 'monetary'}"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-esc="dict(record._fields['state'].selection)[record.state]"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
+

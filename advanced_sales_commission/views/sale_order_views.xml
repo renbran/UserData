@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Sale Order Form View -->
+        <record id="sale_order_form_commission" model="ir.ui.view">
+            <field name="name">sale.order.form.commission</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Commission" name="commission" invisible="state in ['draft','sent']">
+                        <group>
+                            <field name="commission_calculated" readonly="1"/>
+                        </group>
+                        <field name="commission_ids" readonly="1">
+                            <tree>
+                                <field name="user_id"/>
+                                <field name="commission_amount"/>
+                                <field name="base_amount"/>
+                                <field name="commission_rate"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="after">
+                        <field name="commission_amount" readonly="1"/>
+                        <field name="commission_rate" readonly="1"/>
+                        <field name="margin_percent" readonly="1"/>
+            </xpath>
+            </field>
+        </record>
+
+        <!-- Inherit Sale Order Line Form View -->
+<!--        <record id="sale_order_line_form_commission" model="ir.ui.view">-->
+<!--            <field name="name">sale.order.line.form.commission</field>-->
+<!--            <field name="model">sale.order.line</field>-->
+<!--            <field name="inherit_id" ref="sale.view_order_line_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//group[@name='pricing']" position="after">-->
+<!--                    <group string="Commission" name="commission">-->
+<!--                        <field name="commission_amount" readonly="1"/>-->
+<!--                        <field name="commission_rate" readonly="1"/>-->
+<!--                        <field name="margin_percent" readonly="1"/>-->
+<!--                    </group>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+
+        <!-- Inherit Sale Order list View -->
+<!--        <record id="sale_order_list_commission" model="ir.ui.view">-->
+<!--            <field name="name">sale.order.list.commission</field>-->
+<!--            <field name="model">sale.order</field>-->
+<!--            <field name="inherit_id" ref="sale.sale_order_list_upload"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='amount_total']" position="after">-->
+<!--                    <field name="commission_calculated" optional="hide"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+    </data>
+</odoo>
+

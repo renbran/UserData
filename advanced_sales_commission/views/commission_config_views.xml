@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- list View -->
+        <record id="commission_config_view_list" model="ir.ui.view">
+            <field name="name">commission.config.list</field>
+            <field name="model">commission.config</field>
+            <field name="arch" type="xml">
+                <tree string="Commission Configurations">
+                    <field name="name"/>
+                    <field name="commission_type"/>
+                    <field name="calculation_method"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="active" widget="boolean_toggle"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="commission_config_view_form" model="ir.ui.view">
+            <field name="name">commission.config.form</field>
+            <field name="model">commission.config</field>
+            <field name="arch" type="xml">
+                <form string="Commission Configuration">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_rules"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-gavel">
+                                <field name="rule_count" widget="statinfo" string="Rules"/>
+                            </button>
+                            <button name="action_view_assignments"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-users">
+                                <field name="assignment_count" widget="statinfo" string="Assignments"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="commission_type"/>
+                                <field name="calculation_method"/>
+                                <field name="default_rate" invisible="calculation_method == 'tiered'"/>
+                            </group>
+                            <group>
+                                <field name="active" widget="boolean_toggle"/>
+                                <field name="sequence"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        <group string="Validity">
+                            <group>
+                                <field name="date_from"/>
+                            </group>
+                            <group>
+                                <field name="date_to"/>
+                            </group>
+                        </group>
+                        <group string="Automation">
+                            <group>
+                                <field name="auto_calculate"/>
+                            </group>
+                            <group>
+                                <field name="auto_invoice"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Rules" name="rules">
+                                <field name="rule_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="name"/>
+                                        <field name="condition_type"/>
+                                        <field name="commission_type"/>
+                                        <field name="commission_rate"/>
+                                        <field name="active" widget="boolean_toggle"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Assignments" name="assignments">
+                                <field name="assignment_ids">
+                                    <tree editable="bottom">
+                                        <field name="user_id"/>
+                                        <field name="date_from"/>
+                                        <field name="date_to"/>
+                                        <field name="active" widget="boolean_toggle"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="commission_config_view_search" model="ir.ui.view">
+            <field name="name">commission.config.search</field>
+            <field name="model">commission.config</field>
+            <field name="arch" type="xml">
+                <search string="Search Commission Configurations">
+                    <field name="name" string="Configuration Name" filter_domain="[('name', 'ilike', self)]"/>
+                    <field name="commission_type"/>
+                    <field name="calculation_method"/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <group>
+                        <filter string="Commission Type" name="group_by_commission_type" context="{'group_by': 'commission_type'}"/>
+                        <filter string="Calculation Method" name="group_by_calculation_method" context="{'group_by': 'calculation_method'}"/>
+                        <filter string="Company" name="group_by_company" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="action_commission_config" model="ir.actions.act_window">
+            <field name="name">Commission Configurations</field>
+            <field name="res_model">commission.config</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new commission configuration
+                </p><p>
+                    Define how commissions are calculated based on various criteria.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
+

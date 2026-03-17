@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Partner Form View -->
+        <record id="res_partner_form_commission" model="ir.ui.view">
+            <field name="name">res.partner.form.commission</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='sales_purchases']" position="inside">
+                    <group string="Commission Settings" name="commission_settings">
+                        <field name="is_commission_partner"/>
+                        <field name="commission_category" invisible="is_commission_partner == False"/>
+                        <field name="commission_rate_override" invisible="is_commission_partner == False"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Commission Calculate Wizard Form View -->
+        <record id="commission_calculate_wizard_view_form" model="ir.ui.view">
+            <field name="name">commission.calculate.wizard.form</field>
+            <field name="model">commission.calculate.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Calculate Commissions">
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="user_ids" widget="many2many_tags"/>
+                            <field name="recalculate"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_calculate_commissions" type="object" string="Calculate" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action for Commission Calculate Wizard -->
+        <record id="action_commission_calculate_wizard" model="ir.actions.act_window">
+            <field name="name">Calculate Commissions</field>
+            <field name="res_model">commission.calculate.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>
+

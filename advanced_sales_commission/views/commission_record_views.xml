@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- list View -->
+        <record id="commission_record_view_list" model="ir.ui.view">
+            <field name="name">commission.record.list</field>
+            <field name="model">commission.record</field>
+            <field name="arch" type="xml">
+                <tree string="Commission Records" decoration-info="state == 'draft'">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <field name="commission_amount" sum="Total Commission"/>
+                    <field name="base_amount" sum="Total Base Amount"/>
+                    <field name="calculation_date"/>
+                    <field name="state"/>
+                    <field name="invoice_commission_id"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="commission_record_view_form" model="ir.ui.view">
+            <field name="name">commission.record.form</field>
+            <field name="model">commission.record</field>
+            <field name="arch" type="xml">
+                <form string="Commission Record">
+                    <header>
+                        <button name="action_calculate" type="object" string="Calculate Commission" class="oe_highlight" invisible="state != 'draft'"/>
+                        <button name="action_invoice" type="object" string="Generate Invoice" class="oe_highlight" invisible="state != 'calculated'"/>
+                        <button name="action_cancel" type="object" string="Cancel"  invisible="state in ['cancelled','paid']"/>
+                        <button name="action_reset_to_draft" type="object" string="Reset to Draft" invisible="state in ['draft','invoiced','paid']"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,calculated,invoiced,paid"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="user_id"/>
+                                <field name="commission_config_id"/>
+                                <field name="commission_rule_id"/>
+                            </group>
+                            <group>
+                                <field name="calculation_date"/>
+                                <field name="sale_date"/>
+                                <field name="invoice_date"/>
+                            </group>
+                        </group>
+                        <group string="Amounts">
+                            <group>
+                                <field name="base_amount"/>
+                                <field name="commission_rate"/>
+                                <field name="commission_amount"/>
+                            </group>
+                            <group>
+                                <field name="manager_id"/>
+                                <field name="manager_commission"/>
+                                <field name="director_id"/>
+                                <field name="director_commission"/>
+                                <field name="total_commission"/>
+                            </group>
+                        </group>
+                        <group string="Source Documents">
+                            <group>
+                                <field name="order_id"/>
+                                <field name="order_line_id"/>
+                            </group>
+                            <group>
+                                <field name="invoice_id"/>
+                                <field name="invoice_line_id"/>
+                            </group>
+                        </group>
+                        <group string="Related Information">
+                            <group>
+                                <field name="product_id"/>
+                                <field name="partner_id"/>
+                            </group>
+                            <group>
+                                <field name="period_id"/>
+                                <field name="invoice_commission_id"/>
+                                <field name="invoice_line_commission_id"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Notes" name="notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="commission_record_view_search" model="ir.ui.view">
+            <field name="name">commission.record.search</field>
+            <field name="model">commission.record</field>
+            <field name="arch" type="xml">
+                <search string="Search Commission Records">
+                    <field name="name" string="Description" filter_domain="[('name', 'ilike', self)]"/>
+                    <field name="user_id"/>
+                    <field name="state"/>
+                    <field name="period_id"/>
+                    <filter string="Draft" name="state_draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Calculated" name="state_calculated" domain="[('state', '=', 'calculated')]"/>
+                    <filter string="Invoiced" name="state_invoiced" domain="[('state', '=', 'invoiced')]"/>
+                    <filter string="Paid" name="state_paid" domain="[('state', '=', 'paid')]"/>
+                    <group>
+                        <filter string="Salesperson" name="group_by_user" context="{'group_by': 'user_id', 'sum_commission': 'commission_amount', 'sum_base_amount': 'base_amount'}"/>
+                        <filter string="State" name="group_by_state" context="{'group_by': 'state', 'sum_commission': 'commission_amount', 'sum_base_amount': 'base_amount'}"/>
+                        <filter string="Period" name="group_by_period" context="{'group_by': 'period_id', 'sum_commission': 'commission_amount', 'sum_base_amount': 'base_amount'}"/>
+                        <filter string="Commission Configuration" name="group_by_config" context="{'group_by': 'commission_config_id', 'sum_commission': 'commission_amount', 'sum_base_amount': 'base_amount'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="action_commission_record" model="ir.actions.act_window">
+            <field name="name">Commission Records</field>
+            <field name="res_model">commission.record</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No commission records found.
+                </p><p>
+                    Commission records are generated automatically from sales orders or invoices.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
+

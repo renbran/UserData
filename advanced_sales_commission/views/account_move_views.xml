@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Account Move Form View -->
+        <record id="account_move_form_commission" model="ir.ui.view">
+            <field name="name">account.move.form.commission</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Commission" name="commission" invisible=" move_type not in  ['out_invoice', 'out_refund']">
+                        <group>
+                            <field name="commission_calculated" readonly="1"/>
+                        </group>
+                        <field name="commission_ids" readonly="1">
+                            <tree>
+                                <field name="user_id"/>
+                                <field name="commission_amount"/>
+                                <field name="base_amount"/>
+                                <field name="commission_rate"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+
